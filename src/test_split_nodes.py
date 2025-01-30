@@ -37,5 +37,50 @@ class TestSplitNodesDelimiter(unittest.TestCase):
         node = TextNode("", TextType.TEXT)
         result = split_nodes_delimiter([node], "`", TextType.CODE)
         self.assertEqual(result, [node])
+
+
+def test_split_nodes_image():
+    node = TextNode(
+        "Text with an image ![Alt 1](https://example.com/img1.png) and more text.",
+        TextType.TEXT,
+    )
+    result = split_nodes_image([node])
+    assert result == [
+        TextNode("Text with an image ", TextType.TEXT),
+        TextNode("Alt 1", TextType.IMAGE, "https://example.com/img1.png"),
+        TextNode(" and more text.", TextType.TEXT),
+    ]
+
+    # Test no images
+    node = TextNode("No images here!", TextType.TEXT)
+    result = split_nodes_image([node])
+    assert result == [node]
+
+def test_split_nodes_link():
+    node = TextNode(
+        "Text with a link [Google](https://google.com) and another [GitHub](https://github.com).",
+        TextType.TEXT,
+    )
+    result = split_nodes_link([node])
+    assert result == [
+        TextNode("Text with a link ", TextType.TEXT),
+        TextNode("Google", TextType.LINK, "https://google.com"),
+        TextNode(" and another ", TextType.TEXT),
+        TextNode("GitHub", TextType.LINK, "https://github.com"),
+        TextNode(".", TextType.TEXT),
+    ]
+
+    # Test no links
+    node = TextNode("No links here!", TextType.TEXT)
+    result = split_nodes_link([node])
+    assert result == [node]
+
+# Run tests
+'''
+test_split_nodes_image()
+test_split_nodes_link()
+print("All tests passed!")
+'''
+
 if __name__ == "__main__":
     unittest.main()
