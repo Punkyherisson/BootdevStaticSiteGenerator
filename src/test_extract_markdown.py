@@ -23,7 +23,55 @@ def test_extract_markdown_links():
     text = "Text with an image link: ![Alt](https://example.com/img.png)"
     assert extract_markdown_links(text) == []
 
+def test_markdown_to_blocks():
+    markdown = """# Heading 1
+
+    This is a paragraph with **bold** text.
+
+    * Item 1
+    * Item 2
+    * Item 3
+
+    """
+    result = markdown_to_blocks(markdown)
+    assert result == [
+        "# Heading 1",
+        "This is a paragraph with **bold** text.",
+        "* Item 1\n* Item 2\n* Item 3"
+    ]
+
+    # Edge case: Multiple empty lines
+    markdown = """# Title
+
+
+    Paragraph with some text.
+
+
+    * List item 1
+    * List item 2
+
+
+    """
+    result = markdown_to_blocks(markdown)
+    assert result == [
+        "# Title",
+        "Paragraph with some text.",
+        "* List item 1\n* List item 2"
+    ]
+
+    # Edge case: Only empty lines
+    markdown = """
+
+
+    """
+    result = markdown_to_blocks(markdown)
+    assert result == []
+
+
+
+
 # Run tests
 test_extract_markdown_images()
 test_extract_markdown_links()
+test_markdown_to_blocks()
 print("All tests passed!")
