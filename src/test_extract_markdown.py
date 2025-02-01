@@ -1,5 +1,5 @@
-import unittest
 from extract_markdown import *
+
 def test_extract_markdown_images():
     text = "Image 1: ![Alt 1](https://example.com/img1.png), Image 2: ![Alt 2](https://example.com/img2.jpg)"
     assert extract_markdown_images(text) == [

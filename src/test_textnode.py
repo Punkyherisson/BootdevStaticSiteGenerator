@@ -1,5 +1,5 @@
 import unittest
-from textnode import TextNode, TextType
+from text_node import TextNode, TextType
 
 class TestTextNode(unittest.TestCase):
     # Test for equality when all properties are the same

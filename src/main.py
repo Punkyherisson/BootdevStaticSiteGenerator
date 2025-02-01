@@ -1,4 +1,4 @@
-from textnode import TextNode, TextType
+from text_node import TextNode, TextType
 
 def main():
     # Create a TextNode object with dummy values

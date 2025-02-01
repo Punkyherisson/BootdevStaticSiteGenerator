@@ -1,3 +1,39 @@
+from copy import deepcopy  # standard library import first
+from text_node import TextNode, TextType  # local imports
+from extract_markdown import extract_markdown_images, extract_markdown_links
+
+def split_nodes_delimiter(old_nodes, delimiter, text_type):
+    """
+    Splits TextNode objects based on a delimiter.
+
+    Args:
+        old_nodes (list): A list of TextNode objects.
+        delimiter (str): The delimiter to split on (e.g. "**" for bold).
+        text_type (TextType): The type to assign to the split text.
+    Returns:
+        list: A new list of TextNode objects.
+    """
+    new_nodes = []
+    for old_node in old_nodes:
+        if old_node.text_type != TextType.TEXT:
+            new_nodes.append(old_node)
+            continue
+            
+        splits = old_node.text.split(delimiter)
+        if len(splits) % 2 == 0:
+            new_nodes.append(old_node)
+            continue
+            
+        for i in range(len(splits)):
+            if splits[i] == "":
+                continue
+            if i % 2 == 0:
+                new_nodes.append(TextNode(splits[i], TextType.TEXT))
+            else:
+                new_nodes.append(TextNode(splits[i], text_type))
+                
+    return new_nodes
+
 def split_nodes_image(old_nodes):
     """
     Splits TextNode objects based on Markdown image syntax.
@@ -7,7 +43,6 @@ def split_nodes_image(old_nodes):
     Returns:
         list: A new list of TextNode objects, split by images.
     """
-    from copy import deepcopy
 
     new_nodes = []
     for node in old_nodes:
@@ -49,7 +84,6 @@ def split_nodes_link(old_nodes):
     Returns:
         list: A new list of TextNode objects, split by links.
     """
-    from copy import deepcopy
 
     new_nodes = []
     for node in old_nodes:
