@@ -34,6 +34,7 @@ def test_markdown_to_blocks():
 
     """
     result = markdown_to_blocks(markdown)
+    print("Actual result:", result)  # Add this line
     assert result == [
         "# Heading 1",
         "This is a paragraph with **bold** text.",
@@ -67,11 +68,30 @@ def test_markdown_to_blocks():
     result = markdown_to_blocks(markdown)
     assert result == []
 
+def test_block_to_block_type():
+    assert block_to_block_type("### Heading") == "heading"
+    assert block_to_block_type("## Subheading") == "heading"
+    assert block_to_block_type("```print('Hello World')```") == "code"
+    assert block_to_block_type("> Quote line\n> Another quote") == "quote"
+    assert block_to_block_type("* Item 1\n* Item 2") == "unordered_list"
+    assert block_to_block_type("- Another item\n- More items") == "unordered_list"
+    assert block_to_block_type("1. First\n2. Second\n3. Third") == "ordered_list"
+    assert block_to_block_type("This is a normal paragraph.") == "paragraph"
 
+    # Edge cases
+    assert block_to_block_type("##Not a heading") == "paragraph"  # No space after #
+    assert block_to_block_type(">Not a quote") == "paragraph"  # No space after >
+    assert block_to_block_type("1.First item\n2.Second item") == "paragraph"  # Missing space after number.
+    assert block_to_block_type("```Code start\nCode middle\nCode end```") == "code"  # Multi-line code block
 
+    print("All tests passed!")
+
+# Run the tests
 
 # Run tests
 test_extract_markdown_images()
 test_extract_markdown_links()
 test_markdown_to_blocks()
+test_block_to_block_type()
+
 print("All tests passed!")

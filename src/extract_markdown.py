@@ -36,24 +36,71 @@ def markdown_to_blocks(markdown):
     Returns:
         list: A list of block strings.
     """
-    # First split on double newlines
-    raw_blocks = markdown.split("\n\n")
+def markdown_to_blocks(markdown):
     blocks = []
+    current_block = []
     
-    for block in raw_blocks:
-        block = block.strip()
-        if not block:
-            continue
-
-        lines = block.split("\n")
-        # Check if any line starts with "*" after stripping leading whitespace
-        if any(line.lstrip().startswith("*") for line in lines):
-            # Preserve newlines by stripping each line and rejoining with "\n"
-            processed = "\n".join(line.strip() for line in lines)
-        else:
-            # Otherwise, join lines with a single space
-            processed = " ".join(line.strip() for line in lines)
+    for line in markdown.split('\n'):
+        line = line.strip()
         
-        blocks.append(processed)
+        # Start a new block if we see a heading
+        if line.startswith('#'):
+            if current_block:  # Save the previous block if it exists
+                blocks.append('\n'.join(current_block))
+            current_block = [line]  # Start new block with heading
+            continue  # Skip to next line
+            
+        # Empty line means end of current block
+        if line == '':
+            if current_block:  # Save the previous block if it exists
+                blocks.append('\n'.join(current_block))
+                current_block = []
+        # Non-empty line that's not a heading
+        elif not line.startswith('#'):
+            if current_block and current_block[0].startswith('#'):
+                # If we had a heading, start a new block
+                blocks.append('\n'.join(current_block))
+                current_block = [line]
+            else:
+                current_block.append(line)
     
-    return blocks
+    # Don't forget the last block
+    if current_block:
+        blocks.append('\n'.join(current_block))
+    
+    return [block for block in blocks if block]
+
+def block_to_block_type(block):
+    """
+    Determines the type of a given markdown block.
+
+    Args:
+        block (str): A stripped block of markdown text.
+
+    Returns:
+        str: The type of the block (e.g., "heading", "code", "quote", "unordered_list", "ordered_list", "paragraph").
+    """
+
+    # Check for heading (1-6 # characters followed by a space)
+    if re.match(r"^#{1,6} ", block):
+        return "heading"
+
+    # Check for code block (starts and ends with ```)
+    if block.startswith("```") and block.endswith("```"):
+        return "code"
+
+    # Check for quote block (each line starts with >)
+    if all(re.match(r"^> ", line) for line in block.split("\n")):
+        return "quote"
+
+    # Check for unordered list (each line starts with * or - followed by a space)
+    if all(re.match(r"^(\*|-) ", line) for line in block.split("\n")):
+        return "unordered_list"
+
+    # Check for ordered list (each line starts with a number followed by ". ")
+    lines = block.split("\n")
+    if all(re.match(rf"^{i+1}\. ", lines[i]) for i in range(len(lines))):
+        return "ordered_list"
+
+    # If none of the conditions match, it's a normal paragraph
+    return "paragraph"

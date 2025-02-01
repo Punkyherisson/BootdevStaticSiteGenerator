@@ -1,4 +1,5 @@
 from enum import Enum
+from htmlnode import HTMLNode  # Add this line!
 
 # Define the TextType enum
 class TextType(Enum):
@@ -25,3 +26,17 @@ class TextNode:
 
     def __repr__(self):
         return f"TextNode({self.text}, {self.text_type.value}, {self.url})"
+    
+    def to_html_node(self):
+        if self.text_type == TextType.TEXT:
+            return self.text
+        elif self.text_type == TextType.BOLD:
+            return HTMLNode(tag="b", children=[self.text])
+        elif self.text_type == TextType.ITALIC:
+            return HTMLNode(tag="i", children=[self.text])
+        elif self.text_type == TextType.CODE:
+            return HTMLNode(tag="code", children=[self.text])
+        elif self.text_type == TextType.LINK:
+            return HTMLNode(tag="a", children=[self.text], props={"href": self.url})
+        elif self.text_type == TextType.IMAGE:
+            return HTMLNode(tag="img", props={"src": self.url, "alt": self.text})
