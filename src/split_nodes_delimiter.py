@@ -1,36 +1,52 @@
 from copy import deepcopy  # standard library import first
-from text_node import TextNode, TextType  # local imports
-from extract_markdown import extract_markdown_images, extract_markdown_links
+from textnode import TextNode, TextType  # local imports
+from markdown_extractors import extract_markdown_images, extract_markdown_links
+from enum import Enum
 
 def split_nodes_delimiter(old_nodes, delimiter, text_type):
-    """
-    Splits TextNode objects based on a delimiter.
-
-    Args:
-        old_nodes (list): A list of TextNode objects.
-        delimiter (str): The delimiter to split on (e.g. "**" for bold).
-        text_type (TextType): The type to assign to the split text.
-    Returns:
-        list: A new list of TextNode objects.
-    """
+    print(f"\nProcessing delimiter: {delimiter}")
     new_nodes = []
     for old_node in old_nodes:
+        print(f"Processing node: {old_node.text}")
+        print(f"Node type: {old_node.text_type}")
+        
         if old_node.text_type != TextType.TEXT:
+            print("Skipping non-TEXT node")
             new_nodes.append(old_node)
             continue
             
-        splits = old_node.text.split(delimiter)
-        if len(splits) % 2 == 0:
+        text = old_node.text
+        start = text.find(delimiter)
+        print(f"Start position: {start}")
+        
+        if start == -1:
+            print("No delimiter found")
             new_nodes.append(old_node)
             continue
             
-        for i in range(len(splits)):
-            if splits[i] == "":
-                continue
-            if i % 2 == 0:
-                new_nodes.append(TextNode(splits[i], TextType.TEXT))
-            else:
-                new_nodes.append(TextNode(splits[i], text_type))
+        end = text.find(delimiter, start + len(delimiter))
+        print(f"End position: {end}")
+        
+        if end == -1:
+            print("No closing delimiter found")
+            new_nodes.append(old_node)
+            continue
+            
+        before = text[:start]
+        between = text[start + len(delimiter):end]
+        after = text[end + len(delimiter):]
+        print(f"Before: '{before}'")
+        print(f"Between: '{between}'")
+        print(f"After: '{after}'")
+        # Add the parts as nodes
+        if before:
+            new_nodes.append(TextNode(before, TextType.TEXT))
+        if between:
+            new_nodes.append(TextNode(between, text_type))
+        if after:
+            remaining_node = TextNode(after, TextType.TEXT)
+            # Process the remaining text for more delimiters
+            new_nodes.extend(split_nodes_delimiter([remaining_node], delimiter, text_type))
                 
     return new_nodes
 

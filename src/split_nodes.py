@@ -1,4 +1,4 @@
-from text_node import TextNode, TextType
+from textnode import TextNode, TextType
 from extract_markdown import *
 
 def split_nodes_image(old_nodes):
@@ -84,10 +84,12 @@ def split_nodes_link(old_nodes):
             new_nodes.append(TextNode(text, TextType.TEXT))
 
     return new_nodes
+
 def split_nodes_delimiter(old_nodes, delimiter, text_type):
     new_nodes = []
-    
+    print(f"\nSplitting with delimiter: {delimiter}")
     for node in old_nodes:
+        
         if node.text_type != TextType.TEXT:
             # Non-text nodes are added directly
             new_nodes.append(node)
@@ -98,8 +100,9 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
             continue
             
         # Split the text by the delimiter
+        print(f"Node before split: {node.text}")
         parts = node.text.split(delimiter)
-        
+        print(f"Splits: {parts}")
         if len(parts) % 2 == 0:
             raise ValueError(f"Unmatched delimiter '{delimiter}' in text: {node.text}")
         

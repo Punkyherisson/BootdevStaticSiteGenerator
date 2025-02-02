@@ -86,6 +86,15 @@ def test_block_to_block_type():
 
     print("All tests passed!")
 
+def test_extract_title():
+    assert extract_title("# Hello") == "Hello"
+    assert extract_title("#   Hello World  ") == "Hello World"
+    assert extract_title("#Title") == "Title"
+
+    try:
+        extract_title("No title here")
+    except ValueError as e:
+        assert str(e) == "No H1 header found in the markdown file"
 # Run the tests
 
 # Run tests
@@ -93,5 +102,6 @@ test_extract_markdown_images()
 test_extract_markdown_links()
 test_markdown_to_blocks()
 test_block_to_block_type()
+test_extract_title()
 
 print("All tests passed!")

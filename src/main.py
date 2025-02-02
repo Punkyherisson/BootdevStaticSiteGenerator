@@ -1,20 +1,29 @@
 import os
 import shutil
-from static_copy import copy_directory
-from text_node import TextNode, TextType
+
+from copystatic import copy_files_recursive
+from gencontent import generate_page
+
+dir_path_static = "./static"
+dir_path_public = "./public"
+dir_path_content = "./content"
+template_path = "./template.html"
+
 
 def main():
-    # Dynamically set paths relative to script's location
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    static_dir = os.path.join(script_dir, "../static")
-    public_dir = os.path.join(script_dir, "../public")
+    print("Deleting public directory...")
+    if os.path.exists(dir_path_public):
+        shutil.rmtree(dir_path_public)
 
-    # Clear the public directory by copying static assets
-    copy_directory(static_dir, public_dir)
+    print("Copying static files to public directory...")
+    copy_files_recursive(dir_path_static, dir_path_public)
 
-    # Example TextNode usage
-    node = TextNode("This is a text node", TextType.BOLD, "https://www.boot.dev")
-    print(node)
+    print("Generating page...")
+    generate_page(
+        os.path.join(dir_path_content, "index.md"),
+        template_path,
+        os.path.join(dir_path_public, "index.html"),
+    )
 
-if __name__ == "__main__":
-    main()
+
+main()

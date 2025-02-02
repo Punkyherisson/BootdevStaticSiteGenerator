@@ -1,5 +1,5 @@
 from text_to_textnodes import text_to_textnodes
-from text_node import TextNode, TextType
+from textnode import TextNode, TextType
 
 def test_text_to_textnodes():
     text = "This is **bold** and *italic* text with `code`."
